@@ -1,19 +1,13 @@
 import mysql from 'mysql2/promise';
-import config from './config.js';
+import { config } from './config.js';
 
 export const getConnection = async () => {
-  try {
-    const connection = await mysql.createConnection({
-      host: config.DB_SERVER,
-      port: config.DB_PORT,
-      user: config.DB_USER,
-      password: config.DB_PASSWORD,
-      database: config.DB_NAME
+    return await mysql.createConnection({
+        host: config.server,
+        user: config.user,
+        password: config.password,
+        database: config.database,
+        connectTimeout: 30000, // 30 segundos
+        timeout: 60000 // 60 segundos para queries
     });
-
-    return connection;
-  } catch (error) {
-    console.error('Error al conectar a MySQL:', error);
-    throw error;
-  }
 };

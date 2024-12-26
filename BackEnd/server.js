@@ -113,10 +113,13 @@ app.post('/api/auth/register', async (req, res) => {
             message: 'Usuario registrado exitosamente'
         });
     } catch (error) {
-        console.error('Error en registro:', error);
+        console.error('Error detallado en registro:', error);
         res.status(500).json({
             success: false,
-            message: error.message || 'Error al registrar usuario'
+            message: error.code === 'ETIMEDOUT' 
+                ? 'Error de conexión con la base de datos. Por favor, intente nuevamente.'
+                : error.message || 'Error al registrar usuario',
+            errorCode: error.code
         });
     }
 });
