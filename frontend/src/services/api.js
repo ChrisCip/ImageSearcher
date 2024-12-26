@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000',
-    timeout: 30000 // 30 segundos
+    baseURL: 'https://tu-backend-url.railway.app',
+    timeout: 30000
 })
 
 // Interceptor para añadir el token

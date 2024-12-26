@@ -10,12 +10,12 @@ export const getConnection = async () => {
             database: config.database,
             connectTimeout: 30000,
             timeout: 60000,
-            ssl: {
+            ssl: process.env.NODE_ENV === 'production' ? {
                 rejectUnauthorized: false
-            }
+            } : undefined
         });
     } catch (error) {
         console.error('Error al conectar con la base de datos:', error);
-        throw new Error('Error de conexión con la base de datos');
+        throw new Error('Error de conexión con la base de datos: ' + error.message);
     }
 };
