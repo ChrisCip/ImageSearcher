@@ -18,6 +18,10 @@ dotenv.config({
   path: resolve(__dirname, `../${envFile}`)
 });
 
+// Añadir logs para debug
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_SERVER:', process.env.DB_SERVER);
+
 console.log('UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY);
 
 export const config = {
