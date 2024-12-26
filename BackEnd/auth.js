@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import { getConnection } from './DataBase.js';
 import sql from 'mssql';
 
-const JWT_SECRET = 'tu_clave_secreta_muy_segura';
-const JWT_EXPIRES_IN = '60m';
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = '24h';
 
 // Middleware de verificación de token
 export const verifyToken = (req, res, next) => {

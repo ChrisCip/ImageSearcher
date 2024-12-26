@@ -1,10 +1,11 @@
 import sql from 'mssql';
+import config from './config.js'; 
 
 const dbConfig = {
-  server: 'localhost',
-  database: 'ImageSearcher',
-  user: 'chrismi',
-  password: 'chrismi123',
+  server: config.DB_SERVER,
+  database: config.DB_NAME,
+  user: config.DB_USER,
+  password: config.DB_PASSWORD,
   options: {
     trustServerCertificate: true,
     multiSubnetFailover: true,

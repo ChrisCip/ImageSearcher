@@ -1,11 +1,10 @@
-require('dotenv').config()
-
-const express = require('express')
-const cors = require('cors')
-const sql = require('mssql')
-const fetch = require('node-fetch')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+import './config.js'
+import express from 'express'
+import cors from 'cors'
+import sql from 'mssql'
+import fetch from 'node-fetch'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 console.log('Variables de entorno cargadas:')
 console.log('UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY)
