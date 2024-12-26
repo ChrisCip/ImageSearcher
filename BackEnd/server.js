@@ -12,7 +12,7 @@ const app = express()
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'https://imagebrowserunsplash.netlify.app'
+        //'https://imagebrowserunsplash.netlify.app'
     ],
     credentials: true
 }))
