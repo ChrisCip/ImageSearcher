@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { imageService } from '../../services/api';
 import { useAuth } from '../../context/authcontext.jsx';
 
-import './ImageSearch.css';
+import './imageSearch.css';
 
 function ImageSearch() {
     const navigate = useNavigate();
