@@ -80,46 +80,52 @@ app.post('/api/auth/login', async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { nombre, apellido, correo, contraseña } = req.body;
-        const connection = await getConnection();
         
-        // Verificar si el correo ya existe
-        const [existingUsers] = await connection.execute(
-            'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
-            [correo]
-        );
-
-        if (existingUsers[0].count > 0) {
-            await connection.end();
+        if (!nombre || !apellido || !correo || !contraseña) {
             return res.status(400).json({
                 success: false,
-                message: 'El correo electrónico ya está registrado'
+                message: 'Todos los campos son requeridos'
             });
         }
 
-        // Hash de la contraseña
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(contraseña, salt);
+        const connection = await getConnection();
         
-        // Insertar nuevo usuario
-        const [result] = await connection.execute(
-            'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
-            [nombre, apellido, correo, hashedPassword]
-        );
+        try {
+            // Verificar si el correo ya existe
+            const [existingUsers] = await connection.execute(
+                'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
+                [correo]
+            );
 
-        await connection.end();
-        
-        res.json({
-            success: true,
-            message: 'Usuario registrado exitosamente'
-        });
+            if (existingUsers[0].count > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El correo electrónico ya está registrado'
+                });
+            }
+
+            // Hash de la contraseña
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(contraseña, salt);
+            
+            // Insertar nuevo usuario
+            await connection.execute(
+                'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
+                [nombre, apellido, correo, hashedPassword]
+            );
+            
+            res.json({
+                success: true,
+                message: 'Usuario registrado exitosamente'
+            });
+        } finally {
+            await connection.end();
+        }
     } catch (error) {
         console.error('Error detallado en registro:', error);
         res.status(500).json({
             success: false,
-            message: error.code === 'ETIMEDOUT' 
-                ? 'Error de conexión con la base de datos. Por favor, intente nuevamente.'
-                : error.message || 'Error al registrar usuario',
-            errorCode: error.code
+            message: 'Error al registrar usuario. Por favor, intente nuevamente.'
         });
     }
 });
