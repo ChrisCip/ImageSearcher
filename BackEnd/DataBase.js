@@ -8,6 +8,7 @@ export const getConnection = async () => {
             user: config.user,
             password: config.password,
             database: config.database,
+            port: config.port,
             connectTimeout: 30000,
             timeout: 60000,
             ssl: process.env.NODE_ENV === 'production' ? {

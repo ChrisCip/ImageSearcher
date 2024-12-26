@@ -19,29 +19,30 @@ dotenv.config({
 });
 
 // Añadir logs para debug
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_SERVER:', process.env.DB_SERVER);
+console.log('DB_USER:', root);
+console.log('DB_SERVER:', autorack.proxy.rlwy.net);
 
-console.log('UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY);
+console.log('UNSPLASH_ACCESS_KEY:', jpQYFMw2Vau9zyUWlCkhTWjjJ1LUH1ioL4z5nNjdRVo);
 
 export const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
+  user: root,
+  password: sQMZgOmAOLKCfPnutVXnzIBxukDLSBAb,
+  server: autorack.proxy.rlwy.net,
+  database: imagesearcher,
+  port: 3000,
   options: {
     trustServerCertificate: true
   }
 }
 
 export default {
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  HOST: process.env.HOST || '127.0.0.1',
-  PORT: parseInt(process.env.PORT || '3000'),
-  UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
-  UNSPLASH_SECRET_KEY: process.env.UNSPLASH_SECRET_KEY,
-  DB_USER: process.env.DB_USER,
-  DB_PASSWORD: process.env.DB_PASSWORD,
-  DB_NAME: process.env.DB_NAME,
-  DB_SERVER: process.env.DB_SERVER
+  NODE_ENV: development || 'development',
+  HOST: localhost || '127.0.0.1',
+  PORT: parseInt(3000 || '3000'),
+  UNSPLASH_ACCESS_KEY: jpQYFMw2Vau9zyUWlCkhTWjjJ1LUH1ioL4z5nNjdRVo,
+  UNSPLASH_SECRET_KEY: TMft0a2ZOqB36S_DBuPOREb2ufuhD5ODvdAUMEgkZSY,
+  DB_USER:root,
+  DB_PASSWORD: sQMZgOmAOLKCfPnutVXnzIBxukDLSBAb,
+  DB_NAME:imagesearcher,
+  DB_SERVER: autorack.proxy.rlwy.net
 };
