@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom'
 import { authService } from '../../services/api'
 import { useAuth } from '../../context/authcontext'
-import './Login.css'
+import './login.css'
 import Particles from "@tsparticles/react";
 
 function Login() {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/authcontext'
 import { imageService } from '../../services/api'
-import './Profile.css'
+import './profile.css'
 
 function Profile() {
     const { user, logout } = useAuth()
