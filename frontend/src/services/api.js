@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
 export const authService = {
     login: async (correo, contraseña) => {
         try {
-            const response = await api.post('/api/auth/login', {
+            const response = await api.post('/auth/login', {
                 correo: correo,
                 contraseña: contraseña
             })
@@ -29,7 +29,7 @@ export const authService = {
     },
     register: async (userData) => {
         try {
-            const response = await api.post('/api/auth/register', userData)
+            const response = await api.post('/auth/register', userData)
             return response.data
         } catch (error) {
             console.error('Error en registro:', error)
