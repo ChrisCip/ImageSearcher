@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api'
+    baseURL: 'http://localhost:3000'
 })
 
 // Interceptor para añadir el token
@@ -29,7 +29,7 @@ export const authService = {
     },
     register: async (userData) => {
         try {
-            const response = await api.post('/auth/register', userData)
+            const response = await api.post('/api/auth/register', userData)
             return response.data
         } catch (error) {
             console.error('Error en registro:', error)
