@@ -21,10 +21,10 @@ dotenv.config({
 console.log('UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY);
 
 export const config = {
-  user: 'masacre',
-  password: 'masacre123',
-  server: 'localhost',
-  database: 'ImageSearcher',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_NAME,
   options: {
     trustServerCertificate: true
   }

@@ -43,7 +43,10 @@ const verifyToken = (req, res, next) => {
 
 // Configurar CORS
 app.use(cors({
-    origin: 'http://localhost:5173', // URL de tu frontend
+    origin: [
+        'http://localhost:5173',
+        'https://imagebrowserunsplash.netlify.app'
+    ],
     credentials: true
 }))
 

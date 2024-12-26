@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   server: {
     port: 5173,
@@ -12,5 +11,10 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  define: {
+    'process.env.VITE_API_URL': mode === 'production' 
+      ? JSON.stringify('https://tu-backend-url.com/api')
+      : JSON.stringify('http://localhost:3000/api')
   }
-})
+}))
