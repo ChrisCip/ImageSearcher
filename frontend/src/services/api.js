@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
     baseURL: import.meta.env.PROD 
-        ? 'https://tu-backend-produccion.com' 
+        ? 'http://localhost:53421'  // Temporalmente apuntando al local
         : 'http://localhost:53421'
 })
 
