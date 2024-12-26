@@ -1,25 +1,27 @@
 import { getConnection } from './DataBase.js';
-import sql from 'mssql';
 
 export const SaveImage = {
     guardarImagen: async (imageData) => {
         try {
-            console.log('Datos recibidos:', imageData); // Debug
+            console.log('Datos recibidos:', imageData);
+            const connection = await getConnection();
+            
+            const [result] = await connection.execute(
+                'CALL sp_GuardarImagen(?, ?, ?, ?)',
+                [
+                    parseInt(imageData.usuarioId),
+                    imageData.imageId.toString(),
+                    imageData.url,
+                    imageData.nombre
+                ]
+            );
 
-            const pool = await getConnection();
-            const result = await pool.request()
-                .input('UsuarioId', sql.Int, parseInt(imageData.usuarioId))
-                .input('Image_ID', sql.NVarChar(50), imageData.imageId.toString())
-                .input('url', sql.NVarChar(500), imageData.url)
-                .input('Nombre', sql.NVarChar(255), imageData.nombre)
-                .execute('sp_GuardarImagen');
+            await connection.end();
 
-            console.log('Resultado SP:', result); // Debug
-
-            if (result.recordset && result.recordset[0]) {
+            if (result[0] && result[0][0]) {
                 return {
-                    success: result.recordset[0].Success === 1,
-                    message: result.recordset[0].Message
+                    success: result[0][0].Success === 1,
+                    message: result[0][0].Message
                 };
             }
 
@@ -38,14 +40,16 @@ export const SaveImage = {
 
     obtenerImagenesGuardadas: async (usuarioId) => {
         try {
-            const pool = await getConnection();
-            const result = await pool.request()
-                .input('UsuarioId', sql.Int, usuarioId)
-                .execute('sp_ObtenerImagenes'); 
+            const connection = await getConnection();
+            const [rows] = await connection.execute(
+                'CALL sp_ObtenerImagenes(?)',
+                [usuarioId]
+            );
 
+            await connection.end();
             return {
                 success: true,
-                data: result.recordset
+                data: rows[0]
             };
         } catch (error) {
             console.error('Error al obtener imágenes guardadas:', error);
@@ -60,23 +64,21 @@ export const SaveImage = {
         try {
             console.log(`Intentando eliminar imagen ${imageId} del usuario ${usuarioId}`);
             
-            const pool = await getConnection();
-            const result = await pool.request()
-                .input('UsuarioId', sql.Int, parseInt(usuarioId))
-                .input('ImagenId', sql.Int, parseInt(imageId))
-                .execute('sp_EliminarImagen'); 
+            const connection = await getConnection();
+            const [result] = await connection.execute(
+                'CALL sp_EliminarImagen(?, ?)',
+                [parseInt(usuarioId), parseInt(imageId)]
+            );
 
-            console.log('Respuesta del SP:', result.recordset[0]); // Debug log
+            await connection.end();
 
-            if (!result.recordset || !result.recordset[0]) {
+            if (!result[0] || !result[0][0]) {
                 throw new Error('No se recibió respuesta del servidor');
             }
 
-            const response = result.recordset[0];
-
             return {
-                success: response.Success === 1,
-                message: response.Message
+                success: result[0][0].Success === 1,
+                message: result[0][0].Message
             };
         } catch (error) {
             console.error('Error al eliminar imagen:', error);

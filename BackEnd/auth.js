@@ -1,91 +1,46 @@
+import { getConnection } from './DataBase.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { getConnection } from './DataBase.js';
-import sql from 'mssql';
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = '24h';
-
-// Middleware de verificación de token
-export const verifyToken = (req, res, next) => {
-    try {
-        const authHeader = req.headers['authorization'];
-        
-        if (!authHeader) {
-            return res.status(401).json({
-                success: false,
-                message: 'No se proporcionó token de acceso'
-            });
-        }
-
-        const token = authHeader.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: 'Formato de token inválido'
-            });
-        }
-
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        return res.status(401).json({
-            success: false,
-            message: 'Token inválido o expirado'
-        });
-    }
-};
 
 export const Auth = {
     login: async (correo, contraseña) => {
         try {
-            console.log('Intentando login con:', correo); // Debug log
-            const pool = await getConnection();
-            const result = await pool.request()
-                .input('Correo', sql.NVarChar, correo)
-                .input('Contraseña', sql.NVarChar, contraseña)
-                .execute('sp_LoginUsuario');
+            console.log('Intentando login con:', correo);
+            const connection = await getConnection();
+            
+            const [rows] = await connection.execute(
+                'SELECT * FROM Usuario WHERE Correo = ?',
+                [correo]
+            );
 
-            console.log('Resultado SP:', result.recordset[0]); // Debug log
-
-            if (!result.recordset || !result.recordset[0]) {
+            if (!rows || rows.length === 0) {
                 return {
                     success: false,
                     message: 'Usuario no encontrado'
                 };
             }
 
-            const user = result.recordset[0];
-
-            // Si el SP devuelve Success = 0, significa que el usuario no existe
-            if (user.Success === 0) {
-                return {
-                    success: false,
-                    message: user.Message || 'Credenciales inválidas'
-                };
-            }
-
-            // Verificar contraseña
+            const user = rows[0];
             const validPassword = await bcrypt.compare(contraseña, user.Contraseña);
+            
             if (!validPassword) {
-                console.log('Contraseña inválida para usuario:', correo); // Debug log
                 return {
                     success: false,
                     message: 'Credenciales inválidas'
                 };
             }
 
-            // Generar token JWT
             const token = jwt.sign(
                 { 
                     userId: user.Id,
                     email: user.Correo
                 },
-                JWT_SECRET,
-                { expiresIn: JWT_EXPIRES_IN }
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
             );
 
+            await connection.end();
+            
             return {
                 success: true,
                 data: {
@@ -93,13 +48,12 @@ export const Auth = {
                     nombre: user.Nombre,
                     apellido: user.Apellido,
                     correo: user.Correo,
-                    ultimoAcceso: user.UltimoAcceso,
                     token: token
                 },
                 message: 'Login exitoso'
             };
         } catch (error) {
-            console.error('Error detallado en login:', error); // Debug log
+            console.error('Error en login:', error);
             return {
                 success: false,
                 message: error.message
@@ -109,48 +63,31 @@ export const Auth = {
 
     registro: async (userData) => {
         try {
-            console.log('Iniciando registro de usuario:', userData.correo);
+            const connection = await getConnection();
+            
+            // Verificar si el correo existe
+            const [existingUsers] = await connection.execute(
+                'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
+                [userData.correo]
+            );
 
-            // Primero verificar si el correo ya existe
-            const pool = await getConnection();
-            const checkEmail = await pool.request()
-                .input('Correo', sql.NVarChar, userData.correo)
-                .query('SELECT COUNT(*) as count FROM Usuario WHERE Correo = @Correo');
-
-            if (checkEmail.recordset[0].count > 0) {
+            if (existingUsers[0].count > 0) {
+                await connection.end();
                 return {
                     success: false,
                     message: 'El correo electrónico ya está registrado'
                 };
             }
 
-            // Si el correo no existe, proceder con el registro
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(userData.contraseña, salt);
-            console.log('Contraseña hasheada generada');
 
-            const result = await pool.request()
-                .input('Nombre', sql.NVarChar, userData.nombre)
-                .input('Apellido', sql.NVarChar, userData.apellido)
-                .input('Correo', sql.NVarChar, userData.correo)
-                .input('Contraseña', sql.NVarChar, hashedPassword)
-                .execute('sp_RegistrarUsuario');
+            const [result] = await connection.execute(
+                'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña) VALUES (?, ?, ?, ?)',
+                [userData.nombre, userData.apellido, userData.correo, hashedPassword]
+            );
 
-            console.log('Respuesta del SP:', result.recordset[0]);
-
-            if (!result.recordset || !result.recordset[0]) {
-                throw new Error('No se recibió respuesta del servidor');
-            }
-
-            const response = result.recordset[0];
-            
-            // Manejar la respuesta del SP
-            if (response.Success === 0) {
-                return {
-                    success: false,
-                    message: response.Message || 'Error al registrar usuario'
-                };
-            }
+            await connection.end();
 
             return {
                 success: true,
@@ -158,9 +95,9 @@ export const Auth = {
             };
         } catch (error) {
             console.error('Error en registro:', error);
-            return { 
-                success: false, 
-                message: error.message || 'Error al registrar usuario'
+            return {
+                success: false,
+                message: error.message
             };
         }
     }

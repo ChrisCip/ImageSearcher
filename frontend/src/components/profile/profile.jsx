@@ -8,9 +8,10 @@ function Profile() {
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const [savedImages, setSavedImages] = useState([])
+    const [message, setMessage] = useState({ text: '', type: '' })
 
     useEffect(() => {
-        if (user?.Id) {
+        if (user) {
             loadSavedImages()
         }
     }, [user])
@@ -20,12 +21,20 @@ function Profile() {
             const images = await imageService.getSaved(user.Id)
             setSavedImages(images)
         } catch (error) {
-            console.error('Error al cargar imágenes:', error)
+            setMessage({
+                text: 'Error al cargar imágenes: ' + error.message,
+                type: 'error'
+            })
         }
     }
 
     return (
         <div className="profile">
+            {message.text && (
+                <div className={`message ${message.type === 'error' ? 'error-message' : 'success-message'}`}>
+                    {message.text}
+                </div>
+            )}
             <header className="profile__header">
                 <h1 className="profile__title">Perfil de Usuario</h1>
             </header>
@@ -45,7 +54,7 @@ function Profile() {
                 <h2 className="profile__subtitle">Imágenes Guardadas</h2>
                 <div className="profile__image-grid">
                     {savedImages.map((image) => (
-                        <div key={image.id} className="profile__image-card">
+                        <div key={image.Id} className="profile__image-card">
                             <img
                                 src={image.url}
                                 alt={image.name}
@@ -56,13 +65,25 @@ function Profile() {
                                 <button
                                     onClick={async () => {
                                         try {
-                                            await imageService.delete(image.id, user.Id)
+                                            if (!image.Id) {
+                                                throw new Error('ID de imagen no válido')
+                                            }
+                                            await imageService.delete(image.Id, user.Id)
+                                            setMessage({
+                                                text: 'Imagen eliminada correctamente',
+                                                type: 'success'
+                                            })
                                             loadSavedImages()
                                         } catch (error) {
-                                            console.error('Error al eliminar:', error)
-                                            alert('Error al eliminar la imagen: ' + 
-                                                (error.response?.data?.message || error.message))
+                                            setMessage({
+                                                text: 'Error al eliminar la imagen: ' + 
+                                                    (error.response?.data?.message || error.message),
+                                                type: 'error'
+                                            })
                                         }
+                                        setTimeout(() => {
+                                            setMessage({ text: '', type: '' })
+                                        }, 3000)
                                     }}
                                     className="profile__btn profile__btn--delete"
                                 >

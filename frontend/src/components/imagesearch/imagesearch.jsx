@@ -16,6 +16,7 @@ function ImageSearch() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalResults, setTotalResults] = useState(0);
+    const [message, setMessage] = useState({ text: '', type: '' });
 
     const handleSearch = async (page = 1) => {
         if (!query) return;
@@ -50,23 +51,41 @@ function ImageSearch() {
     const handleSaveImage = async (image) => {
         try {
             if (!user) {
-                alert('Debes iniciar sesión para guardar imágenes');
+                setMessage({ text: 'Debes iniciar sesión para guardar imágenes', type: 'error' });
                 navigate('/login');
                 return;
             }
+            
             const imageData = {
+                usuarioId: user.Id,
+                imageId: image.id,
                 url: image.urls.regular,
-                title: image.description || image.alt_description || 'Sin título',
-                userId: user.Id
+                nombre: image.description || image.alt_description || 'Sin título'
             };
+            
             const response = await imageService.save(imageData);
             if (response.success) {
                 setSavedImages([...savedImages, image.id]);
-                alert('Imagen guardada correctamente');
+                setMessage({ text: 'Imagen guardada correctamente', type: 'success' });
             }
         } catch (error) {
-            alert('Error al guardar la imagen: ' + (error.response?.data?.message || error.message));
+            if (error.response?.status === 409) {
+                setMessage({ 
+                    text: error.response.data.message || 'Esta imagen ya ha sido guardada', 
+                    type: 'error' 
+                });
+            } else {
+                setMessage({ 
+                    text: 'Error al guardar la imagen: ' + (error.response?.data?.message || error.message),
+                    type: 'error'
+                });
+            }
         }
+        
+        // Limpiar el mensaje después de 3 segundos
+        setTimeout(() => {
+            setMessage({ text: '', type: '' });
+        }, 3000);
     };
 
     const getPageRange = () => {
@@ -133,6 +152,12 @@ function ImageSearch() {
             </div>
 
             {totalResults > 0 && renderPagination()}
+
+            {message.text && (
+                <div className={`message ${message.type === 'error' ? 'error-message' : 'success-message'}`}>
+                    {message.text}
+                </div>
+            )}
         </div>
     );
 }

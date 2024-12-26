@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000'
 })
 
 // Interceptor para añadir el token
@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
 export const authService = {
     login: async (correo, contraseña) => {
         try {
-            const response = await api.post('/auth/login', {
+            const response = await api.post('/api/auth/login', {
                 correo: correo,
                 contraseña: contraseña
             })
@@ -29,7 +29,7 @@ export const authService = {
     },
     register: async (userData) => {
         try {
-            const response = await api.post('/auth/register', userData)
+            const response = await api.post('/api/auth/register', userData)
             return response.data
         } catch (error) {
             console.error('Error en registro:', error)
@@ -41,43 +41,53 @@ export const authService = {
 // Servicios de imágenes
 export const imageService = {
     search: async (query, page = 1) => {
-        try {
-            const response = await api.get(`/unsplash/search?query=${encodeURIComponent(query)}&page=${page}&per_page=30`)
-            return response.data
-        } catch (error) {
-            console.error('Error en la búsqueda:', error)
-            throw error.response?.data || error
-        }
+        const response = await api.get('/api/unsplash/search', {
+            params: {
+                q: query,
+                page,
+                per_page: 30
+            }
+        });
+        return response.data;
     },
-    getUnsplash: async (query) => {
-        const response = await api.get(`/unsplash/search?q=${encodeURIComponent(query)}`)
-        return response.data
+    getUnsplash: async (query, page = 1, per_page = 30) => {
+        try {
+            console.log('Realizando búsqueda:', { query, page, per_page });
+            const response = await api.get('/api/unsplash/search', {
+                params: {
+                    q: query,
+                    page,
+                    per_page
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error en búsqueda:', error);
+            throw error;
+        }
     },
     save: async (imageData) => {
         try {
-            const response = await api.post('/images/save', imageData)
+            const response = await api.post('/api/images/save', imageData)
             return response.data
         } catch (error) {
             console.error('Error al guardar imagen:', error)
             throw error.response?.data || error
         }
     },
-    getSaved: async (userId) => {
+    getSaved: async (UsuarioId) => {
         try {
-            console.log('Obteniendo imágenes guardadas para usuario:', userId)
-            const response = await api.get(`/images/saved/${userId}`)
-            console.log('Respuesta de imágenes guardadas:', response.data)
+            const response = await api.get(`/api/images/saved/${UsuarioId}`)
             return response.data
         } catch (error) {
             console.error('Error al obtener imágenes guardadas:', error)
             throw error.response?.data || error
         }
     },
-    delete: async (imageId, userId) => {
+    delete: async (imageId, UsuarioId) => {
         try {
-            console.log('Enviando petición de eliminación:', { imageId, userId }) // Debug
-            const response = await api.delete(`/images/${imageId}`, {
-                params: { userId }
+            const response = await api.delete(`/api/images/${imageId}`, {
+                params: { UsuarioId }
             })
             return response.data
         } catch (error) {
