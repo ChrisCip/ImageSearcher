@@ -2,10 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
     baseURL: 'http://localhost:53421',
-    headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    }
+    withCredentials: true
 })
 
 // Interceptor para añadir el token
