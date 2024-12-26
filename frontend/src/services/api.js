@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:53421'
+    baseURL: import.meta.env.PROD 
+        ? 'https://tu-backend-produccion.com' 
+        : 'http://localhost:53421'
 })
 
 // Interceptor para añadir el token
