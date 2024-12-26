@@ -1,9 +1,11 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: import.meta.env.PROD 
-        ? 'http://localhost:53421'  // Temporalmente apuntando al local
-        : 'http://localhost:53421'
+    baseURL: 'http://localhost:53421',
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+    }
 })
 
 // Interceptor para añadir el token
