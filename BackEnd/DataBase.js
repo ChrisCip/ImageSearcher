@@ -5,6 +5,7 @@ export const getConnection = async () => {
   try {
     const connection = await mysql.createConnection({
       host: config.DB_SERVER,
+      port: config.DB_PORT,
       user: config.DB_USER,
       password: config.DB_PASSWORD,
       database: config.DB_NAME
