@@ -111,3 +111,65 @@ export const userService = {
 }
 
 export default api
+
+app.post('/api/auth/register', async (req, res) => {
+    let connection;
+    try {
+        const { nombre, apellido, correo, contraseña } = req.body;
+        console.log('Datos recibidos:', { nombre, apellido, correo }); // Debug
+        
+        if (!nombre || !apellido || !correo || !contraseña) {
+            return res.status(400).json({
+                success: false,
+                message: 'Todos los campos son requeridos'
+            });
+        }
+
+        connection = await getConnection();
+        
+        // Verificar si el correo ya existe
+        const [existingUsers] = await connection.execute(
+            'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
+            [correo]
+        );
+
+        if (existingUsers[0].count > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'El correo electrónico ya está registrado'
+            });
+        }
+
+        // Hash de la contraseña
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(contraseña, salt);
+        
+        // Insertar nuevo usuario
+        const [result] = await connection.execute(
+            'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
+            [nombre, apellido, correo, hashedPassword]
+        );
+        
+        console.log('Usuario registrado:', result); // Debug
+        
+        res.json({
+            success: true,
+            message: 'Usuario registrado exitosamente'
+        });
+    } catch (error) {
+        console.error('Error detallado en registro:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al registrar usuario. Por favor, intente nuevamente.',
+            error: ENV_VARS.NODE_ENV === 'development' ? error.message : undefined
+        });
+    } finally {
+        if (connection) {
+            try {
+                await connection.end();
+            } catch (err) {
+                console.error('Error al cerrar la conexión:', err);
+            }
+        }
+    }
+});
