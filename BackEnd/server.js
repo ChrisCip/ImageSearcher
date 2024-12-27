@@ -10,7 +10,7 @@ import { getConnection } from './DataBase.js'
 // Configuración inicial del servidor
 const app = express()
 app.use(cors({
-    origin: 'https://image-searcher-kappa.vercel.app',
+    origin: 'https://image-searcher-ochre.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
