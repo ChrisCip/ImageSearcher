@@ -65,6 +65,7 @@ export const Auth = {
     registro: async (userData) => {
         let connection;
         try {
+            console.log('Intentando registrar:', userData); // Debug
             connection = await getConnection();
             
             // Verificar si el correo existe
@@ -88,13 +89,15 @@ export const Auth = {
                 [userData.nombre, userData.apellido, userData.correo, hashedPassword]
             );
 
+            console.log('Resultado de inserción:', result); // Debug
+
             return {
                 success: true,
                 message: 'Usuario registrado exitosamente'
             };
         } catch (error) {
             console.error('Error detallado en registro:', error);
-            throw new Error('Error al registrar usuario: ' + error.message);
+            throw error;
         } finally {
             if (connection) {
                 try {

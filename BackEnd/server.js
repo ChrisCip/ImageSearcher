@@ -81,6 +81,7 @@ app.post('/api/auth/register', async (req, res) => {
     let connection;
     try {
         const { nombre, apellido, correo, contraseña } = req.body;
+        console.log('Datos recibidos:', { nombre, apellido, correo }); // Debug
         
         if (!nombre || !apellido || !correo || !contraseña) {
             return res.status(400).json({
@@ -109,10 +110,12 @@ app.post('/api/auth/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(contraseña, salt);
         
         // Insertar nuevo usuario
-        await connection.execute(
+        const [result] = await connection.execute(
             'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
             [nombre, apellido, correo, hashedPassword]
         );
+        
+        console.log('Usuario registrado:', result); // Debug
         
         res.json({
             success: true,
@@ -122,10 +125,8 @@ app.post('/api/auth/register', async (req, res) => {
         console.error('Error detallado en registro:', error);
         res.status(500).json({
             success: false,
-            message: error.code === 'ETIMEDOUT' 
-                ? 'Error de conexión con la base de datos. Por favor, intente nuevamente.'
-                : 'Error al registrar usuario. Por favor, intente nuevamente.',
-            errorDetails: process.env.NODE_ENV === 'development' ? error.message : undefined
+            message: 'Error al registrar usuario. Por favor, intente nuevamente.',
+            error: ENV_VARS.NODE_ENV === 'development' ? error.message : undefined
         });
     } finally {
         if (connection) {
