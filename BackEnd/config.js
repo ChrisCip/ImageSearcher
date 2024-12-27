@@ -15,7 +15,8 @@ const ENV_VARS = {
   UNSPLASH_ACCESS_KEY: 'jpQYFMw2Vau9zyUWlCkhTWjjJ1LUH1ioL4z5nNjdRVo',
   UNSPLASH_SECRET_KEY: 'TMft0a2ZOqB36S_DBuPOREb2ufuhD5ODvdAUMEgkZSY',
   NODE_ENV: 'development',
-  PORT: 3000
+  PORT: 3000,
+  JWT_SECRET: '96c692258f44cc7dde5301d3acbd85b8f68f9c7980e5afa67e670a2b586a962bd9cb139044ca9aea9888609dfd397f9b8aed91d3d09835c722a8f1b438b6afd5'
 };
 
 // Configuración de la base de datos

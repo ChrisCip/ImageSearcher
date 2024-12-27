@@ -62,8 +62,9 @@ export const Auth = {
     },
 
     registro: async (userData) => {
+        let connection;
         try {
-            const connection = await getConnection();
+            connection = await getConnection();
             
             // Verificar si el correo existe
             const [existingUsers] = await connection.execute(
@@ -72,7 +73,6 @@ export const Auth = {
             );
 
             if (existingUsers[0].count > 0) {
-                await connection.end();
                 return {
                     success: false,
                     message: 'El correo electrónico ya está registrado'
@@ -83,22 +83,25 @@ export const Auth = {
             const hashedPassword = await bcrypt.hash(userData.contraseña, salt);
 
             const [result] = await connection.execute(
-                'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña) VALUES (?, ?, ?, ?)',
+                'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
                 [userData.nombre, userData.apellido, userData.correo, hashedPassword]
             );
-
-            await connection.end();
 
             return {
                 success: true,
                 message: 'Usuario registrado exitosamente'
             };
         } catch (error) {
-            console.error('Error en registro:', error);
-            return {
-                success: false,
-                message: error.message
-            };
+            console.error('Error detallado en registro:', error);
+            throw new Error('Error al registrar usuario: ' + error.message);
+        } finally {
+            if (connection) {
+                try {
+                    await connection.end();
+                } catch (err) {
+                    console.error('Error al cerrar la conexión:', err);
+                }
+            }
         }
     }
 };
