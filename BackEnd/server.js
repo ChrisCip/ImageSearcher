@@ -23,7 +23,7 @@ app.post('/api/auth/login', async (req, res) => {
         const connection = await getConnection();
 
         const [rows] = await connection.execute(
-            'SELECT * FROM Usuario WHERE Correo = ?',
+            'SELECT * FROM usuario WHERE Correo = ?',
             [correo]
         );
 
@@ -53,7 +53,7 @@ app.post('/api/auth/login', async (req, res) => {
         );
 
         await connection.execute(
-            'UPDATE Usuario SET UltimoAcceso = NOW() WHERE Id = ?',
+            'UPDATE usuario SET UltimoAcceso = NOW() WHERE Id = ?',
             [user.Id]
         );
 
@@ -94,7 +94,7 @@ app.post('/api/auth/register', async (req, res) => {
         
         // Verificar si el correo ya existe
         const [existingUsers] = await connection.execute(
-            'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
+            'SELECT COUNT(*) as count FROM usuario WHERE Correo = ?',
             [correo]
         );
 
@@ -202,7 +202,7 @@ app.post('/api/images/save', async (req, res) => {
         
         // Verificar si la imagen ya existe
         const [existingImages] = await connection.execute(
-            'SELECT COUNT(*) as count FROM Imagenes WHERE UsuarioId = ? AND Image_ID = ?',
+            'SELECT COUNT(*) as count FROM imagenes WHERE UsuarioId = ? AND Image_ID = ?',
             [usuarioId, imageId]
         );
         

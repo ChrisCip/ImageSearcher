@@ -10,7 +10,7 @@ export const Auth = {
             const connection = await getConnection();
             
             const [rows] = await connection.execute(
-                'SELECT * FROM Usuario WHERE Correo = ?',
+                'SELECT * FROM usuario WHERE Correo = ?',
                 [correo]
             );
 
@@ -70,7 +70,7 @@ export const Auth = {
             
             // Verificar si el correo existe
             const [existingUsers] = await connection.execute(
-                'SELECT COUNT(*) as count FROM Usuario WHERE Correo = ?',
+                'SELECT COUNT(*) as count FROM usuario WHERE Correo = ?',
                 [userData.correo]
             );
 
@@ -85,7 +85,7 @@ export const Auth = {
             const hashedPassword = await bcrypt.hash(userData.contraseña, salt);
 
             const [result] = await connection.execute(
-                'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
+                'INSERT INTO usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
                 [userData.nombre, userData.apellido, userData.correo, hashedPassword]
             );
 

@@ -8,7 +8,7 @@ export const imageController = {
             // Verificar si la imagen ya existe
             const connection = await getConnection();
             const [existingImages] = await connection.execute(
-                'SELECT COUNT(*) as count FROM Imagenes WHERE UsuarioId = ? AND Image_ID = ?',
+                'SELECT COUNT(*) as count FROM imagenes WHERE UsuarioId = ? AND Image_ID = ?',
                 [usuarioId, imageId]
             );
             
@@ -53,9 +53,9 @@ export const imageController = {
                 Id: img.Id,
                 UsuarioId: img.UsuarioId,
                 Image_ID: img.Image_ID,
-                url: img.URL,
-                name: img.Nombre,
-                fechaGuardado: img.FechaGuardado
+                url: img.url,
+                Nombre: img.Nombre,
+                FechaGuardado: img.FechaGuardado
             }));
             
             await connection.end();
@@ -75,7 +75,7 @@ export const imageController = {
             
             if (!imagenId || !UsuarioId) {
                 return res.status(400).json({ 
-                    error: 'Se requieren tanto el ID de la imagen como el ID del usuario' 
+                    error: 'Se requieren tanto el ID de la imagen como el ID del usuario'
                 });
             }
 
@@ -86,21 +86,18 @@ export const imageController = {
             );
             
             await connection.end();
-
+            
             if (!result[0] || !result[0][0]) {
                 throw new Error('No se recibió respuesta del servidor');
             }
-
+            
             res.json({
                 success: result[0][0].Success === 1,
                 message: result[0][0].Message
             });
         } catch (error) {
-            console.error('Error detallado:', error);
-            res.status(500).json({ 
-                error: error.message || 'Error al eliminar la imagen',
-                details: error
-            });
+            console.error('Error al eliminar:', error);
+            res.status(500).json({ error: error.message });
         }
     }
 };
