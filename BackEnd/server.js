@@ -111,7 +111,7 @@ app.post('/api/auth/register', async (req, res) => {
         
         // Insertar nuevo usuario
         const [result] = await connection.execute(
-            'INSERT INTO Usuario (Nombre, Apellido, Correo, Contraseña, FechaCreacion, UltimoAcceso) VALUES (?, ?, ?, ?, NOW(), NOW())',
+            'CALL sp_RegistrarUsuario(?, ?, ?, ?)',
             [nombre, apellido, correo, hashedPassword]
         );
         
