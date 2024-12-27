@@ -107,5 +107,5 @@ export const userService = {
     }
 };
 
-export default authService
+export default authService;
 
