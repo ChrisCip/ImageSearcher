@@ -19,7 +19,7 @@ function Login() {
         setError('')
         
         try {
-            const response = await authService.login(credentials.correo, credentials.contraseña)
+            const response = await authService.login(credentials)
             if (response.success) {
                 console.log('Usuario logueado:', response)
                 login(response)
