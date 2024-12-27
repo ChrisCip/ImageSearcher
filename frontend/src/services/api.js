@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'imagesearcher-production.up.railway.app',
+    baseURL: 'https://imagesearcher-production.up.railway.app',
     timeout: 30000
 })
 
