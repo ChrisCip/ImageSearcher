@@ -1,6 +1,7 @@
 import { getConnection } from './DataBase.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { ENV_VARS } from './config.js';
 
 export const Auth = {
     login: async (correo, contraseña) => {
@@ -35,7 +36,7 @@ export const Auth = {
                     userId: user.Id,
                     email: user.Correo
                 },
-                process.env.JWT_SECRET,
+                ENV_VARS.JWT_SECRET,
                 { expiresIn: '24h' }
             );
 

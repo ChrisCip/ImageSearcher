@@ -1,4 +1,4 @@
-import './config.js'
+import { ENV_VARS } from './config.js'
 import express from 'express'
 import cors from 'cors'
 import mysql from 'mysql2/promise'
@@ -48,7 +48,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         const token = jwt.sign(
             { id: user.Id, email: user.Correo },
-            process.env.JWT_SECRET,
+            ENV_VARS.JWT_SECRET,
             { expiresIn: '24h' }
         );
 

@@ -44,3 +44,5 @@ export default {
   DB_SERVER: ENV_VARS.DB_SERVER,
   DB_PORT: ENV_VARS.DB_PORT
 };
+
+export { ENV_VARS };
