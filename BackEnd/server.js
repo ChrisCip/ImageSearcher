@@ -1,20 +1,20 @@
-import { ENV_VARS } from './config.js'
-import express from 'express'
-import cors from 'cors'
-import mysql from 'mysql2/promise'
-import fetch from 'node-fetch'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import { getConnection } from './DataBase.js'
+import { ENV_VARS } from './config.js';
+import express from 'express';
+import cors from 'cors';
+import mysql from 'mysql2/promise';
+import fetch from 'node-fetch';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { getConnection } from './DataBase.js';
 
 // Configuración inicial del servidor
-const app = express()
+const app = express();
 app.use(cors({
-    origin: 'https://image-searcher-ochre.vercel.app',
+    origin: ['https://image-searcher-ochre.vercel.app', 'https://image-searcher-kappa.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}))
-app.use(express.json())
+}));
+app.use(express.json());
 
 // Rutas de autenticación
 app.post('/api/auth/login', async (req, res) => {
