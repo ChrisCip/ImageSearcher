@@ -1,8 +1,8 @@
-﻿import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { authService } from '../../services/api.js'
-import { useAuth } from '../../context/authcontext'
-import './login.css'
+﻿import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../../services/api';
+import { useAuth } from '../../context/authcontext';
+import './login.css';
 import Particles from "@tsparticles/react";
 
 function Login() {
@@ -150,7 +150,7 @@ function Login() {
                 </p>
             </div>
         </div>
-    )
+    );
 }
 
-export default Login
+export default Login;
